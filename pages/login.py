@@ -16,6 +16,12 @@ if st.button("Login"):
             st.session_state["logged_in"] = True
             st.session_state["username"] = user["username"]
             st.session_state["role"] = user["role"]
+
             st.success("Login successful!")
+
+            if user["role"] == "admin":
+                st.switch_page("pages/admin_dashboard.py")
+            elif user["role"] == "employee":
+                st.switch_page("pages/employee_dashboard.py")
         else:
             st.error("Invalid username or password.")

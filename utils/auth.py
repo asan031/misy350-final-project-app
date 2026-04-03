@@ -1,3 +1,6 @@
+import os
+import json
+
 USERS_FILE = "data/users.json"
 
 

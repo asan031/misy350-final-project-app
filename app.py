@@ -15,5 +15,11 @@ st.title("Small Business Inventory Manager")
 
 if st.session_state["logged_in"]:
     st.success(f"Logged in as {st.session_state['username']} ({st.session_state['role']})")
+
+    if st.button("Logout"):
+        st.session_state["logged_in"] = False
+        st.session_state["username"] = ""
+        st.session_state["role"] = ""
+        st.rerun()
 else:
     st.info("Please log in from the Login page.")
