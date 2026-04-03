@@ -3,11 +3,9 @@ from pathlib import Path
 
 import streamlit as st
 
-
 # ---------- File path ----------
 BASE_DIR = Path(__file__).resolve().parent.parent
 USERS_FILE = BASE_DIR / "data" / "users.json"
-
 
 # ---------- Helpers ----------
 def load_users():
@@ -29,7 +27,7 @@ def save_users(users):
 
 def username_exists(users, username):
     for user in users:
-        if user["username"].lower() == username.lower():
+        if user.get("username", "").lower() == username.lower():
             return True
     return False
 
@@ -37,7 +35,9 @@ def username_exists(users, username):
 def next_user_id(users):
     if not users:
         return 1
-    return max(user["id"] for user in users) + 1
+
+    existing_ids = [user.get("id", 0) for user in users]
+    return max(existing_ids) + 1
 
 
 # ---------- Page UI ----------
@@ -46,7 +46,7 @@ st.write("Create an account to use the app.")
 
 username = st.text_input("Username")
 password = st.text_input("Password", type="password")
-role = st.selectbox("Role", ["attendee", "admin"])
+role = st.selectbox("Role", ["employee", "admin"])
 
 if st.button("Create Account"):
     users = load_users()
