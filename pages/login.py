@@ -13,6 +13,9 @@ if st.button("Login"):
         user = login_user(username, password)
 
         if user:
+            st.session_state["logged_in"] = True
+            st.session_state["username"] = user["username"]
+            st.session_state["role"] = user["role"]
             st.success("Login successful!")
         else:
             st.error("Invalid username or password.")
