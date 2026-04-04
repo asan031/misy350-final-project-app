@@ -38,6 +38,19 @@ def add_item(name, price, stock):
     save_data(INVENTORY_FILE, items)
 
 
+def update_item(item_id, new_name, new_price, new_stock):
+    items = get_inventory()
+
+    for item in items:
+        if item["id"] == item_id:
+            item["name"] = new_name
+            item["price"] = new_price
+            item["stock"] = new_stock
+            break
+
+    save_data(INVENTORY_FILE, items)
+
+
 def delete_item(item_id):
     items = get_inventory()
     updated_items = [item for item in items if item["id"] != item_id]
