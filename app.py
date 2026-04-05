@@ -1,4 +1,10 @@
 import streamlit as st
+import json
+import os
+from pathlib import Path
+
+
+#Session State
 
 st.set_page_config(page_title="Inventory Manager", layout="wide")
 
@@ -23,6 +29,145 @@ if st.session_state["logged_in"]:
         st.rerun()
 else:
     st.info("Please log in from the Login page.")
+
+
+#Storage
+
+def load_data(file_path):
+    if not os.path.exists(file_path):
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump([], f)
+        return []
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+
+            if content == "":
+                return []
+
+            return json.loads(content)
+    except (json.JSONDecodeError, FileNotFoundError):
+        return []
+
+
+def save_data(file_path, data):
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+#Authentication
+
+USERS_FILE = "data/users.json"
+
+
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        with open(USERS_FILE, "w") as file:
+            json.dump([], file)
+
+    with open(USERS_FILE, "r") as file:
+        return json.load(file)
+
+
+def login_user(username, password):
+    users = load_users()
+
+    for user in users:
+        if user["username"] == username and user["password"] == password:
+            return user
+
+    return None
+
+#Inventory 
+
+INVENTORY_FILE = "data/inventory.json"
+SALES_FILE = "data/sales.json"
+
+
+def get_inventory():
+    return load_data(INVENTORY_FILE)
+
+
+def get_sales():
+    return load_data(SALES_FILE)
+
+
+def next_item_id(items):
+    if not items:
+        return 1
+    return max(item.get("id", 0) for item in items) + 1
+
+
+def next_sale_id(sales):
+    if not sales:
+        return 1
+    return max(sale.get("id", 0) for sale in sales) + 1
+
+
+def add_item(name, price, stock):
+    items = get_inventory()
+
+    new_item = {
+        "id": next_item_id(items),
+        "name": name,
+        "price": price,
+        "stock": stock
+    }
+
+    items.append(new_item)
+    save_data(INVENTORY_FILE, items)
+
+
+def update_item(item_id, new_name, new_price, new_stock):
+    items = get_inventory()
+
+    for item in items:
+        if item["id"] == item_id:
+            item["name"] = new_name
+            item["price"] = new_price
+            item["stock"] = new_stock
+            break
+
+    save_data(INVENTORY_FILE, items)
+
+
+def delete_item(item_id):
+    items = get_inventory()
+    updated_items = [item for item in items if item["id"] != item_id]
+    save_data(INVENTORY_FILE, updated_items)
+
+
+def record_sale(item_id, quantity, employee_username):
+    items = get_inventory()
+    sales = get_sales()
+
+    for item in items:
+        if item["id"] == item_id:
+            if quantity > item["stock"]:
+                return False, "Not enough stock available."
+
+            item["stock"] -= quantity
+
+            sale = {
+                "id": next_sale_id(sales),
+                "item_id": item_id,
+                "item_name": item["name"],
+                "quantity": quantity,
+                "employee": employee_username
+            }
+
+            sales.append(sale)
+
+            save_data(INVENTORY_FILE, items)
+            save_data(SALES_FILE, sales)
+
+            return True, "Sale recorded successfully."
+
+    return False, "Item not found."
+
+
+
+
 
 # Admin Dashboard
 import streamlit as st
@@ -328,142 +473,3 @@ if st.button("Create Account"):
         st.success("Account created successfully!")
         st.write("You can now go to the login page.")
 
-#Auth.py
-import os
-import json
-
-USERS_FILE = "data/users.json"
-
-
-def load_users():
-    if not os.path.exists(USERS_FILE):
-        with open(USERS_FILE, "w") as file:
-            json.dump([], file)
-
-    with open(USERS_FILE, "r") as file:
-        return json.load(file)
-
-
-def login_user(username, password):
-    users = load_users()
-
-    for user in users:
-        if user["username"] == username and user["password"] == password:
-            return user
-
-    return None
-
-#Inventory Helpers
-from utils.storage import load_data, save_data
-
-INVENTORY_FILE = "data/inventory.json"
-SALES_FILE = "data/sales.json"
-
-
-def get_inventory():
-    return load_data(INVENTORY_FILE)
-
-
-def get_sales():
-    return load_data(SALES_FILE)
-
-
-def next_item_id(items):
-    if not items:
-        return 1
-    return max(item.get("id", 0) for item in items) + 1
-
-
-def next_sale_id(sales):
-    if not sales:
-        return 1
-    return max(sale.get("id", 0) for sale in sales) + 1
-
-
-def add_item(name, price, stock):
-    items = get_inventory()
-
-    new_item = {
-        "id": next_item_id(items),
-        "name": name,
-        "price": price,
-        "stock": stock
-    }
-
-    items.append(new_item)
-    save_data(INVENTORY_FILE, items)
-
-
-def update_item(item_id, new_name, new_price, new_stock):
-    items = get_inventory()
-
-    for item in items:
-        if item["id"] == item_id:
-            item["name"] = new_name
-            item["price"] = new_price
-            item["stock"] = new_stock
-            break
-
-    save_data(INVENTORY_FILE, items)
-
-
-def delete_item(item_id):
-    items = get_inventory()
-    updated_items = [item for item in items if item["id"] != item_id]
-    save_data(INVENTORY_FILE, updated_items)
-
-
-def record_sale(item_id, quantity, employee_username):
-    items = get_inventory()
-    sales = get_sales()
-
-    for item in items:
-        if item["id"] == item_id:
-            if quantity > item["stock"]:
-                return False, "Not enough stock available."
-
-            item["stock"] -= quantity
-
-            sale = {
-                "id": next_sale_id(sales),
-                "item_id": item_id,
-                "item_name": item["name"],
-                "quantity": quantity,
-                "employee": employee_username
-            }
-
-            sales.append(sale)
-
-            save_data(INVENTORY_FILE, items)
-            save_data(SALES_FILE, sales)
-
-            return True, "Sale recorded successfully."
-
-    return False, "Item not found."
-
-#Storage.py
-import json
-import os
-
-
-def load_data(file_path):
-    if not os.path.exists(file_path):
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump([], f)
-        return []
-
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read().strip()
-
-            if content == "":
-                return []
-
-            return json.loads(content)
-    except (json.JSONDecodeError, FileNotFoundError):
-        return []
-
-
-def save_data(file_path, data):
-    with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
