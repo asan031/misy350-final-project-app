@@ -199,311 +199,250 @@ def record_sale(item_id, quantity, employee_username):
 
 
 
-
-
-# Admin Dashboard
-import streamlit as st
-
-if not st.session_state.get("logged_in"):
-    st.warning("Please log in first.")
-    st.stop()
-
-if st.session_state.get("role") != "admin":
-    st.error("Access denied.")
-    st.stop()
-
-st.title("Admin Dashboard")
-st.write(f"Welcome, {st.session_state['username']}!")
-
-if st.button("Logout"):
-    st.session_state["logged_in"] = False
-    st.session_state["username"] = ""
-    st.session_state["role"] = ""
-    st.rerun()
-
-# Employee Dashboard
-import streamlit as st
-from utils.inventory_helpers import get_inventory
-
-if not st.session_state.get("logged_in"):
-    st.warning("Please log in first.")
-    st.stop()
-
-if st.session_state.get("role") != "employee":
-    st.error("Access denied.")
-    st.stop()
-
-st.title("Employee Dashboard")
-st.write(f"Welcome, {st.session_state['username']}!")
-
-items = get_inventory()
-
-st.subheader("Inventory Overview")
-
-if not items:
-    st.info("No inventory items found.")
-else:
-    for item in items:
-        st.write(f"{item['name']} | Price: ${item['price']} | Stock: {item['stock']}")
-
-low_stock_items = [item for item in items if item["stock"] <= 5]
-
-st.subheader("Low Stock Alerts")
-
-if not low_stock_items:
-    st.success("No low-stock items right now.")
-else:
-    for item in low_stock_items:
-        st.warning(f"{item['name']} is low on stock ({item['stock']} left)")
-
-if st.button("Logout"):
-    st.session_state["logged_in"] = False
-    st.session_state["username"] = ""
-    st.session_state["role"] = ""
-    st.rerun()
-
 #Login Page
-import streamlit as st
-from utils.auth import login_user
 
-st.title("Login")
+if st.session_state["page"] == "login":
+    st.header("Login")
 
-username = st.text_input("Username")
-password = st.text_input("Password", type="password")
+    username = st.text_input("Username", key="login_username")
+    password = st.text_input("Password", type="password", key="login_password")
 
-if st.button("Login"):
-    if username == "" or password == "":
-        st.error("Please fill in all fields.")
-    else:
-        user = login_user(username, password)
-
-        if user:
-            st.session_state["logged_in"] = True
-            st.session_state["username"] = user["username"]
-            st.session_state["role"] = user["role"]
-
-            st.success("Login successful!")
-
-            if user["role"] == "admin":
-                st.session_state["page"] = "admin_dashboard"
-            elif user["role"] == "employee":
-                st.session_state["page"] = "employee_dashboard"
-
-            st.rerun()
+    if st.button("Login", key="login_submit_btn"):
+        if username == "" or password == "":
+            st.error("Please fill in all fields.")
         else:
-            st.error("Invalid username or password.")
+            user = login_user(username, password)
 
-#Manage Inventory
+            if user:
+                st.session_state["logged_in"] = True
+                st.session_state["username"] = user["username"]
+                st.session_state["role"] = user["role"]
 
-import streamlit as st
-from utils.inventory_helpers import get_inventory, add_item, update_item, delete_item
+                st.success("Login successful!")
 
-if not st.session_state.get("logged_in"):
-    st.warning("Please log in first.")
-    st.stop()
+                if user["role"] == "admin":
+                    st.session_state["page"] = "admin_dashboard"
+                elif user["role"] == "employee":
+                    st.session_state["page"] = "employee_dashboard"
 
-if st.session_state.get("role") != "admin":
-    st.error("Access denied.")
-    st.stop()
+                st.rerun()
+            else:
+                st.error("Invalid username or password.")
+    
 
-st.title("Manage Inventory")
-
-
-st.subheader("Add New Item")
-
-name = st.text_input("Item Name")
-price = st.number_input("Price", min_value=0.0, step=0.01)
-stock = st.number_input("Stock", min_value=0, step=1)
-
-if st.button("Add Item"):
-    if name.strip() == "":
-        st.error("Item name cannot be empty.")
-    else:
-        add_item(name.strip(), price, stock)
-        st.success("Item added successfully!")
-        st.rerun()
-
-
-st.subheader("Current Inventory")
-
-items = get_inventory()
-
-if not items:
-    st.info("No inventory items yet.")
-else:
-    for item in items:
-        st.write(f"ID: {item['id']} | {item['name']} | ${item['price']} | Stock: {item['stock']}")
-
-
-st.subheader("Update Item")
-
-if items:
-    item_options = {
-        f"{item['id']} - {item['name']}": item["id"]
-        for item in items
-    }
-
-    selected_label = st.selectbox("Select item to update", list(item_options.keys()))
-    selected_item_id = item_options[selected_label]
-
-    selected_item = None
-    for item in items:
-        if item["id"] == selected_item_id:
-            selected_item = item
-            break
-
-    updated_name = st.text_input("New Item Name", value=selected_item["name"])
-    updated_price = st.number_input("New Price", min_value=0.0, step=0.01, value=float(selected_item["price"]))
-    updated_stock = st.number_input("New Stock", min_value=0, step=1, value=int(selected_item["stock"]))
-
-    if st.button("Update Item"):
-        if updated_name.strip() == "":
-            st.error("Item name cannot be empty.")
-        else:
-            update_item(selected_item_id, updated_name.strip(), updated_price, updated_stock)
-            st.success("Item updated successfully!")
-            st.rerun()
-
-
-st.subheader("Delete Item")
-
-if items:
-    for item in items:
-        if st.button(f"Delete Item {item['id']}", key=f"delete_{item['id']}"):
-            delete_item(item["id"])
-            st.warning("Item deleted.")
-            st.rerun()
-
-#Record Sales
-
-import streamlit as st
-from utils.inventory_helpers import get_inventory, record_sale
-
-if not st.session_state.get("logged_in"):
-    st.warning("Please log in first.")
-    st.stop()
-
-if st.session_state.get("role") != "employee":
-    st.error("Access denied.")
-    st.stop()
-
-st.title("Record Sales")
-
-items = get_inventory()
-
-if not items:
-    st.info("No inventory items available.")
-    st.stop()
-
-st.subheader("Current Inventory")
-
-available_items = []
-for item in items:
-    st.write(f"ID: {item['id']} | {item['name']} | ${item['price']} | Stock: {item['stock']}")
-    if item["stock"] > 0:
-        available_items.append(item)
-
-if not available_items:
-    st.warning("All items are out of stock.")
-    st.stop()
-
-st.subheader("Record a Sale")
-
-item_options = {
-    f"{item['id']} - {item['name']} (Stock: {item['stock']})": item["id"]
-    for item in available_items
-}
-
-selected_label = st.selectbox("Choose an item", list(item_options.keys()))
-selected_item_id = item_options[selected_label]
-
-quantity = st.number_input("Quantity Sold", min_value=1, step=1)
-
-if st.button("Record Sale"):
-    success, message = record_sale(
-        selected_item_id,
-        quantity,
-        st.session_state["username"]
-    )
-
-    if success:
-        st.success(message)
-        st.rerun()
-    else:
-        st.error(message)
 
 #Register Page
 
-import json
-from pathlib import Path
+elif st.session_state["page"] == "register":
+    st.header("Register")
+    st.write("Create an account to use the app.")
 
-import streamlit as st
+    username = st.text_input("Username", key="register_username")
+    password = st.text_input("Password", type="password", key="register_password")
+    role = st.selectbox("Role", ["employee", "admin"], key="register_role")
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-USERS_FILE = BASE_DIR / "data" / "users.json"
+    if st.button("Create Account", key="register_submit_btn"):
+        users = load_users()
 
-def load_users():
-    if not USERS_FILE.exists():
-        return []
+        username = username.strip()
+        password = password.strip()
 
-    try:
-        with open(USERS_FILE, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            return data if isinstance(data, list) else []
-    except (json.JSONDecodeError, FileNotFoundError):
-        return []
+        if username == "":
+            st.error("Username cannot be empty.")
+        elif password == "":
+            st.error("Password cannot be empty.")
+        elif username_exists(users, username):
+            st.error("That username already exists. Please choose another one.")
+        else:
+            new_user = {
+                "id": next_user_id(users),
+                "username": username,
+                "password": password,
+                "role": role
+            }
 
+            users.append(new_user)
+            save_data(USERS_FILE, users)
 
-def save_users(users):
-    with open(USERS_FILE, "w", encoding="utf-8") as file:
-        json.dump(users, file, indent=4)
+            st.success("Account created successfully!")
+            st.write("You can now go to the login page.")
 
+# Admin Dashboard
 
-def username_exists(users, username):
-    for user in users:
-        if user.get("username", "").lower() == username.lower():
-            return True
-    return False
+elif st.session_state["page"] == "admin_dashboard":
+    if not st.session_state.get("logged_in"):
+        st.warning("Please log in first.")
+        st.stop()
 
+    if st.session_state.get("role") != "admin":
+        st.error("Access denied.")
+        st.stop()
 
-def next_user_id(users):
-    if not users:
-        return 1
+    st.header("Admin Dashboard")
+    st.write(f"Welcome, {st.session_state['username']}!")
 
-    existing_ids = [user.get("id", 0) for user in users]
-    return max(existing_ids) + 1
+# Employee Dashboard
+elif st.session_state["page"] == "employee_dashboard":
+    if not st.session_state.get("logged_in"):
+        st.warning("Please log in first.")
+        st.stop()
 
+    if st.session_state.get("role") != "employee":
+        st.error("Access denied.")
+        st.stop()
 
-st.title("Register")
-st.write("Create an account to use the app.")
+    st.header("Employee Dashboard")
+    st.write(f"Welcome, {st.session_state['username']}!")
 
-username = st.text_input("Username")
-password = st.text_input("Password", type="password")
-role = st.selectbox("Role", ["employee", "admin"])
+    items = get_inventory()
 
-if st.button("Create Account"):
-    users = load_users()
+    st.subheader("Inventory Overview")
 
-    username = username.strip()
-    password = password.strip()
-
-    if username == "":
-        st.error("Username cannot be empty.")
-    elif password == "":
-        st.error("Password cannot be empty.")
-    elif username_exists(users, username):
-        st.error("That username already exists. Please choose another one.")
+    if not items:
+        st.info("No inventory items found.")
     else:
-        new_user = {
-            "id": next_user_id(users),
-            "username": username,
-            "password": password,
-            "role": role
+        for item in items:
+            st.write(f"{item['name']} | Price: ${item['price']} | Stock: {item['stock']}")
+
+    low_stock_items = [item for item in items if item["stock"] <= 5]
+
+    st.subheader("Low Stock Alerts")
+
+    if not low_stock_items:
+        st.success("No low-stock items right now.")
+    else:
+        for item in low_stock_items:
+            st.warning(f"{item['name']} is low on stock ({item['stock']} left)")
+
+
+
+#Manage Inventory
+
+elif st.session_state["page"] == "manage_inventory":
+    if not st.session_state.get("logged_in"):
+        st.warning("Please log in first.")
+        st.stop()
+
+    if st.session_state.get("role") != "admin":
+        st.error("Access denied.")
+        st.stop()
+
+    st.header("Manage Inventory")
+
+    st.subheader("Add New Item")
+
+    name = st.text_input("Item Name", key="add_item_name")
+    price = st.number_input("Price", min_value=0.0, step=0.01, key="add_item_price")
+    stock = st.number_input("Stock", min_value=0, step=1, key="add_item_stock")
+
+    if st.button("Add Item", key="add_item_btn"):
+        if name.strip() == "":
+            st.error("Item name cannot be empty.")
+        else:
+            add_item(name.strip(), price, stock)
+            st.success("Item added successfully!")
+            st.rerun()
+
+    st.subheader("Current Inventory")
+
+    items = get_inventory()
+
+    if not items:
+        st.info("No inventory items yet.")
+    else:
+        for item in items:
+            st.write(f"ID: {item['id']} | {item['name']} | ${item['price']} | Stock: {item['stock']}")
+
+    st.subheader("Update Item")
+
+    if items:
+        item_options = {
+            f"{item['id']} - {item['name']}": item["id"]
+            for item in items
         }
 
-        users.append(new_user)
-        save_users(users)
+        selected_label = st.selectbox("Select item to update", list(item_options.keys()), key="update_item_select")
+        selected_item_id = item_options[selected_label]
 
-        st.success("Account created successfully!")
-        st.write("You can now go to the login page.")
+        selected_item = None
+        for item in items:
+            if item["id"] == selected_item_id:
+                selected_item = item
+                break
 
+        updated_name = st.text_input("New Item Name", value=selected_item["name"], key="updated_name_input")
+        updated_price = st.number_input("New Price", min_value=0.0, step=0.01, value=float(selected_item["price"]), key="updated_price_input")
+        updated_stock = st.number_input("New Stock", min_value=0, step=1, value=int(selected_item["stock"]), key="updated_stock_input")
+
+        if st.button("Update Item", key="update_item_btn"):
+            if updated_name.strip() == "":
+                st.error("Item name cannot be empty.")
+            else:
+                update_item(selected_item_id, updated_name.strip(), updated_price, updated_stock)
+                st.success("Item updated successfully!")
+                st.rerun()
+
+    st.subheader("Delete Item")
+
+    if items:
+        for item in items:
+            if st.button(f"Delete Item {item['id']}", key=f"delete_{item['id']}"):
+                delete_item(item["id"])
+                st.warning("Item deleted.")
+                st.rerun()
+
+#Record Sales
+
+elif st.session_state["page"] == "record_sales":
+    if not st.session_state.get("logged_in"):
+        st.warning("Please log in first.")
+        st.stop()
+
+    if st.session_state.get("role") != "employee":
+        st.error("Access denied.")
+        st.stop()
+
+    st.header("Record Sales")
+
+    items = get_inventory()
+
+    if not items:
+        st.info("No inventory items available.")
+        st.stop()
+
+    st.subheader("Current Inventory")
+
+    available_items = []
+    for item in items:
+        st.write(f"ID: {item['id']} | {item['name']} | ${item['price']} | Stock: {item['stock']}")
+        if item["stock"] > 0:
+            available_items.append(item)
+
+    if not available_items:
+        st.warning("All items are out of stock.")
+        st.stop()
+
+    st.subheader("Record a Sale")
+
+    item_options = {
+        f"{item['id']} - {item['name']} (Stock: {item['stock']})": item["id"]
+        for item in available_items
+    }
+
+    selected_label = st.selectbox("Choose an item", list(item_options.keys()), key="record_sale_select")
+    selected_item_id = item_options[selected_label]
+
+    quantity = st.number_input("Quantity Sold", min_value=1, step=1, key="record_sale_quantity")
+
+    if st.button("Record Sale", key="record_sale_btn"):
+        success, message = record_sale(
+            selected_item_id,
+            quantity,
+            st.session_state["username"]
+        )
+
+        if success:
+            st.success(message)
+            st.rerun()
+        else:
+            st.error(message)
