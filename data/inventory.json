@@ -1,1 +1,20 @@
-[]
+[
+    {
+        "id": 1,
+        "name": "Notebook",
+        "price": 2.0,
+        "stock": 9
+    },
+    {
+        "id": 2,
+        "name": "Pen Pac",
+        "price": 2.0,
+        "stock": 5
+    },
+    {
+        "id": 3,
+        "name": "Market Set",
+        "price": 5.0,
+        "stock": 2
+    }
+]
