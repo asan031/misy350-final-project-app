@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 
-#Session State
+#App Header and Status
 
 st.set_page_config(page_title="Inventory Manager", layout="wide")
 
@@ -17,21 +17,53 @@ if "username" not in st.session_state:
 if "role" not in st.session_state:
     st.session_state["role"] = ""
 
+if "page" not in st.session_state:
+    st.session_state["page"] = "login"
+
 st.title("Small Business Inventory Manager")
 
 if st.session_state["logged_in"]:
     st.success(f"Logged in as {st.session_state['username']} ({st.session_state['role']})")
-
-    if st.button("Logout"):
-        st.session_state["logged_in"] = False
-        st.session_state["username"] = ""
-        st.session_state["role"] = ""
-        st.rerun()
 else:
     st.info("Please log in from the Login page.")
 
+#Side Bar Navigation 
+with st.sidebar:
+    st.title("Inventory Manager")
 
-#Storage
+    if st.session_state["logged_in"]:
+        if st.button("Admin Dashboard", use_container_width=True):
+            st.session_state["page"] = "admin_dashboard"
+            st.rerun()
+
+        if st.button("Employee Dashboard", use_container_width=True):
+            st.session_state["page"] = "employee_dashboard"
+            st.rerun()
+
+        if st.button("Manage Inventory", use_container_width=True):
+            st.session_state["page"] = "manage_inventory"
+            st.rerun()
+
+        if st.button("Record Sales", use_container_width=True):
+            st.session_state["page"] = "record_sales"
+            st.rerun()
+
+        if st.button("Logout", use_container_width=True):
+            st.session_state["logged_in"] = False
+            st.session_state["username"] = ""
+            st.session_state["role"] = ""
+            st.session_state["page"] = "login"
+            st.rerun()
+    else:
+        if st.button("Login", use_container_width=True):
+            st.session_state["page"] = "login"
+            st.rerun()
+
+        if st.button("Register", use_container_width=True):
+            st.session_state["page"] = "register"
+            st.rerun()
+
+#Storage Functions
 
 def load_data(file_path):
     if not os.path.exists(file_path):
@@ -55,7 +87,7 @@ def save_data(file_path, data):
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
-#Authentication
+#Authentication Functions
 
 USERS_FILE = "data/users.json"
 
@@ -78,7 +110,7 @@ def login_user(username, password):
 
     return None
 
-#Inventory 
+#Inventory Functions
 
 INVENTORY_FILE = "data/inventory.json"
 SALES_FILE = "data/sales.json"
@@ -253,9 +285,11 @@ if st.button("Login"):
             st.success("Login successful!")
 
             if user["role"] == "admin":
-                st.switch_page("pages/admin_dashboard.py")
+                st.session_state["page"] = "admin_dashboard"
             elif user["role"] == "employee":
-                st.switch_page("pages/employee_dashboard.py")
+                st.session_state["page"] = "employee_dashboard"
+
+            st.rerun()
         else:
             st.error("Invalid username or password.")
 
