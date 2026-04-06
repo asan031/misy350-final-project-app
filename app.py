@@ -93,12 +93,7 @@ USERS_FILE = "data/users.json"
 
 
 def load_users():
-    if not os.path.exists(USERS_FILE):
-        with open(USERS_FILE, "w") as file:
-            json.dump([], file)
-
-    with open(USERS_FILE, "r") as file:
-        return json.load(file)
+    return load_data(USERS_FILE)
 
 
 def login_user(username, password):
@@ -109,6 +104,21 @@ def login_user(username, password):
             return user
 
     return None
+
+
+def username_exists(users, username):
+    for user in users:
+        if user.get("username", "").lower() == username.lower():
+            return True
+    return False
+
+
+def next_user_id(users):
+    if not users:
+        return 1
+
+    existing_ids = [user.get("id", 0) for user in users]
+    return max(existing_ids) + 1
 
 #Inventory Functions
 
