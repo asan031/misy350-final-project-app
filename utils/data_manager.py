@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 USERS_FILE = BASE_DIR / "data" / "users.json"
@@ -10,7 +9,6 @@ SALES_FILE = BASE_DIR / "data" / "sales.json"
 
 
 class DataManager:
-
     @staticmethod
     def load_json(file_path):
         try:
