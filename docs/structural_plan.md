@@ -2,7 +2,7 @@
 
 ## Authors
 - Sean
-- Partner
+- Angelo
 
 ## Date
 2026-05-11
