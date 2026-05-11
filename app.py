@@ -1,8 +1,5 @@
 import streamlit as st
-import json
-import os
-from pathlib import Path
-
+from utils.data_manager import DataManager, USERS_FILE, INVENTORY_FILE, SALES_FILE
 
 #App Header and Status
 
@@ -63,37 +60,12 @@ with st.sidebar:
             st.session_state["page"] = "register"
             st.rerun()
 
-#Storage Functions
-
-def load_data(file_path):
-    if not os.path.exists(file_path):
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump([], f)
-        return []
-
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read().strip()
-
-            if content == "":
-                return []
-
-            return json.loads(content)
-    except (json.JSONDecodeError, FileNotFoundError):
-        return []
-
-
-def save_data(file_path, data):
-    with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
-
 #Authentication Functions
 
-USERS_FILE = "data/users.json"
 
 
 def load_users():
-    return load_data(USERS_FILE)
+    return DataManager.load_json(USERS_FILE)
 
 
 def login_user(username, password):
@@ -122,16 +94,12 @@ def next_user_id(users):
 
 #Inventory Functions
 
-INVENTORY_FILE = "data/inventory.json"
-SALES_FILE = "data/sales.json"
-
-
 def get_inventory():
-    return load_data(INVENTORY_FILE)
+    return DataManager.load_json(INVENTORY_FILE)
 
 
 def get_sales():
-    return load_data(SALES_FILE)
+    return DataManager.load_json(SALES_FILE)
 
 
 def next_item_id(items):
@@ -157,7 +125,7 @@ def add_item(name, price, stock):
     }
 
     items.append(new_item)
-    save_data(INVENTORY_FILE, items)
+    DataManager.save_json(INVENTORY_FILE, items)
 
 
 def update_item(item_id, new_name, new_price, new_stock):
@@ -170,13 +138,13 @@ def update_item(item_id, new_name, new_price, new_stock):
             item["stock"] = new_stock
             break
 
-    save_data(INVENTORY_FILE, items)
+    DataManager.save_json(INVENTORY_FILE, items)
 
 
 def delete_item(item_id):
     items = get_inventory()
     updated_items = [item for item in items if item["id"] != item_id]
-    save_data(INVENTORY_FILE, updated_items)
+    DataManager.save_json(INVENTORY_FILE, updated_items)
 
 
 def record_sale(item_id, quantity, employee_username):
@@ -200,8 +168,8 @@ def record_sale(item_id, quantity, employee_username):
 
             sales.append(sale)
 
-            save_data(INVENTORY_FILE, items)
-            save_data(SALES_FILE, sales)
+            DataManager.save_json(INVENTORY_FILE, items)
+            DataManager.save_json(SALES_FILE, sales)
 
             return True, "Sale recorded successfully."
 
@@ -272,7 +240,7 @@ elif st.session_state["page"] == "register":
             }
 
             users.append(new_user)
-            save_data(USERS_FILE, users)
+            DataManager.save_json(USERS_FILE, users)
 
             st.success("Account created successfully!")
             st.write("You can now go to the login page.")
