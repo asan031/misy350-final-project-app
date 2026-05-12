@@ -77,3 +77,30 @@ Admins should be able to view employee-facing dashboard information while employ
 ### Layers Affected
 - UI layer
 - Role access logic
+
+
+
+
+
+## Entry 4 - 2026-05-12
+
+### Author
+Angelo
+
+### Origin Prompt
+@ChatGPT what items should I test and is handling duplicate inventory items within scope?
+
+### What Changed
+- Tested Manage Inventory functionality (Add, Update, Delete).
+- Verified tab-based layout works correctly.
+- Identified an issue where adding duplicate items creates separate entries instead of updating stock.
+
+### Why It Changed
+To ensure the UI improvements function correctly and to validate core inventory workflows as part of Phase 2 testing.
+
+### Layers Affected
+- UI layer (testing and validation)
+- Inventory logic (issue identified for backend improvement)
+
+### Notes
+- Duplicate item handling will be addressed by Sean as part of backend/service logic improvements.
