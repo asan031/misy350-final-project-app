@@ -40,3 +40,21 @@ These changes improve usability, make the app easier to navigate, and create a c
 ## Layers Affected
 - UI layer (app.py)
 - Minor interaction with service layer if needed for displaying metrics
+
+
+
+## Entry 2 - 2026-05-12
+
+### Author
+Angelo
+
+### What Changed
+- Improved Admin Dashboard UI.
+- Added metrics using st.metric.
+- Added tabs for inventory summary and low stock alerts.
+
+### Why It Changed
+To make the admin dashboard easier to read and better for the final demo.
+
+### Layers Affected
+- UI layer (app.py)
