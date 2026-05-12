@@ -299,7 +299,7 @@ elif st.session_state["page"] == "employee_dashboard":
         st.warning("Please log in first.")
         st.stop()
 
-    if st.session_state.get("role") != "employee":
+    if st.session_state.get("role") not in ["employee", "admin"]:
         st.error("Access denied.")
         st.stop()
 
@@ -308,25 +308,35 @@ elif st.session_state["page"] == "employee_dashboard":
 
     items = get_inventory()
 
-    st.subheader("Inventory Overview")
+    total_items = len(items)
+    total_stock = sum(item["stock"] for item in items)
+    low_stock_count = len([item for item in items if item["stock"] <= 5])
 
-    if not items:
-        st.info("No inventory items found.")
-    else:
-        for item in items:
-            st.write(f"{item['name']} | Price: ${item['price']} | Stock: {item['stock']}")
+    col1, col2, col3 = st.columns(3)
 
-    low_stock_items = [item for item in items if item["stock"] <= 5]
+    col1.metric("Inventory Items", total_items)
+    col2.metric("Total Stock", total_stock)
+    col3.metric("Low Stock Alerts", low_stock_count)
 
-    st.subheader("Low Stock Alerts")
+    st.divider()
 
-    if not low_stock_items:
-        st.success("No low-stock items right now.")
-    else:
-        for item in low_stock_items:
-            st.warning(f"{item['name']} is low on stock ({item['stock']} left)")
+    tab1, tab2 = st.tabs(["Inventory Overview", "Low Stock Alerts"])
 
+    with tab1:
+        if not items:
+            st.info("No inventory items found.")
+        else:
+            for item in items:
+                st.write(f"{item['name']} | Price: ${item['price']} | Stock: {item['stock']}")
 
+    with tab2:
+        low_stock_items = [item for item in items if item["stock"] <= 5]
+
+        if not low_stock_items:
+            st.success("No low-stock items right now.")
+        else:
+            for item in low_stock_items:
+                st.warning(f"{item['name']} is low on stock ({item['stock']} left)")
 
 #Manage Inventory
 
@@ -410,7 +420,7 @@ elif st.session_state["page"] == "record_sales":
         st.warning("Please log in first.")
         st.stop()
 
-    if st.session_state.get("role") != "employee":
+    if st.session_state.get("role") not in ["employee", "admin"]:
         st.error("Access denied.")
         st.stop()
 

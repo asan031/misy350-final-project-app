@@ -1,4 +1,4 @@
-# Angelo Individual Plan
+# Angelo Individual Plan w/ Entries
 
 ## Author
 Angelo
@@ -58,3 +58,22 @@ To make the admin dashboard easier to read and better for the final demo.
 
 ### Layers Affected
 - UI layer (app.py)
+
+
+
+## Entry 3 - 2026-05-12
+
+### Author
+Angelo
+
+### What Changed
+- Improved Admin Dashboard with metrics and tabs.
+- Improved Employee Dashboard with metrics and tabs.
+- Updated Employee Dashboard permissions so admins can view it too.
+
+### Why It Changed
+Admins should be able to view employee-facing dashboard information while employees remain restricted from admin-only pages.
+
+### Layers Affected
+- UI layer
+- Role access logic
