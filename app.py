@@ -258,6 +258,40 @@ elif st.session_state["page"] == "admin_dashboard":
 
     st.header("Admin Dashboard")
     st.write(f"Welcome, {st.session_state['username']}!")
+    items = get_inventory()
+    sales = get_sales()
+
+    total_items = len(items)
+    total_stock = sum(item["stock"] for item in items)
+    low_stock_count = len([item for item in items if item["stock"] <= 5])
+    total_sales = len(sales)
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric("Inventory Items", total_items)
+    col2.metric("Total Stock", total_stock)
+    col3.metric("Low Stock Items", low_stock_count)
+    col4.metric("Sales Recorded", total_sales)
+
+    st.divider()
+
+    tab1, tab2 = st.tabs(["Inventory Summary", "Low Stock Alerts"])
+
+    with tab1:
+        if not items:
+            st.info("No inventory items found.")
+        else:
+            for item in items:
+                st.write(f"{item['name']} | ${item['price']} | Stock: {item['stock']}")
+
+    with tab2:
+        low_stock_items = [item for item in items if item["stock"] <= 5]
+
+        if not low_stock_items:
+            st.success("No low-stock items right now.")
+        else:
+            for item in low_stock_items:
+                st.warning(f"{item['name']} is low on stock ({item['stock']} left)")
 
 # Employee Dashboard
 elif st.session_state["page"] == "employee_dashboard":
