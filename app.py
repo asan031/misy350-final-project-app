@@ -351,67 +351,90 @@ elif st.session_state["page"] == "manage_inventory":
 
     st.header("Manage Inventory")
 
-    st.subheader("Add New Item")
-
-    name = st.text_input("Item Name", key="add_item_name")
-    price = st.number_input("Price", min_value=0.0, step=0.01, key="add_item_price")
-    stock = st.number_input("Stock", min_value=0, step=1, key="add_item_stock")
-
-    if st.button("Add Item", key="add_item_btn"):
-        if name.strip() == "":
-            st.error("Item name cannot be empty.")
-        else:
-            add_item(name.strip(), price, stock)
-            st.success("Item added successfully!")
-            st.rerun()
-
-    st.subheader("Current Inventory")
-
     items = get_inventory()
 
-    if not items:
-        st.info("No inventory items yet.")
-    else:
-        for item in items:
-            st.write(f"ID: {item['id']} | {item['name']} | ${item['price']} | Stock: {item['stock']}")
+    tab1, tab2, tab3 = st.tabs(["Add Item", "Update Item", "Delete Item"])
 
-    st.subheader("Update Item")
+    with tab1:
+        st.subheader("Add New Item")
 
-    if items:
-        item_options = {
-            f"{item['id']} - {item['name']}": item["id"]
-            for item in items
-        }
+        with st.form("add_item_form"):
+            name = st.text_input("Item Name")
+            price = st.number_input("Price", min_value=0.0, step=0.01)
+            stock = st.number_input("Stock", min_value=0, step=1)
 
-        selected_label = st.selectbox("Select item to update", list(item_options.keys()), key="update_item_select")
-        selected_item_id = item_options[selected_label]
+            submitted = st.form_submit_button("Add Item")
 
-        selected_item = None
-        for item in items:
-            if item["id"] == selected_item_id:
-                selected_item = item
-                break
+            if submitted:
+                if name.strip() == "":
+                    st.error("Item name cannot be empty.")
+                else:
+                    add_item(name.strip(), price, stock)
+                    st.success("Item added successfully!")
+                    st.rerun()
 
-        updated_name = st.text_input("New Item Name", value=selected_item["name"], key="updated_name_input")
-        updated_price = st.number_input("New Price", min_value=0.0, step=0.01, value=float(selected_item["price"]), key="updated_price_input")
-        updated_stock = st.number_input("New Stock", min_value=0, step=1, value=int(selected_item["stock"]), key="updated_stock_input")
+    with tab2:
+        st.subheader("Update Item")
 
-        if st.button("Update Item", key="update_item_btn"):
-            if updated_name.strip() == "":
-                st.error("Item name cannot be empty.")
-            else:
-                update_item(selected_item_id, updated_name.strip(), updated_price, updated_stock)
-                st.success("Item updated successfully!")
-                st.rerun()
+        if not items:
+            st.info("No inventory items available to update.")
+        else:
+            item_options = {
+                f"{item['id']} - {item['name']}": item["id"]
+                for item in items
+            }
 
-    st.subheader("Delete Item")
+            selected_label = st.selectbox("Select item to update", list(item_options.keys()))
+            selected_item_id = item_options[selected_label]
 
-    if items:
-        for item in items:
-            if st.button(f"Delete Item {item['id']}", key=f"delete_{item['id']}"):
-                delete_item(item["id"])
-                st.warning("Item deleted.")
-                st.rerun()
+            selected_item = None
+            for item in items:
+                if item["id"] == selected_item_id:
+                    selected_item = item
+                    break
+
+            with st.form("update_item_form"):
+                updated_name = st.text_input("New Item Name", value=selected_item["name"])
+                updated_price = st.number_input(
+                    "New Price",
+                    min_value=0.0,
+                    step=0.01,
+                    value=float(selected_item["price"])
+                )
+                updated_stock = st.number_input(
+                    "New Stock",
+                    min_value=0,
+                    step=1,
+                    value=int(selected_item["stock"])
+                )
+
+                submitted = st.form_submit_button("Update Item")
+
+                if submitted:
+                    if updated_name.strip() == "":
+                        st.error("Item name cannot be empty.")
+                    else:
+                        update_item(selected_item_id, updated_name.strip(), updated_price, updated_stock)
+                        st.success("Item updated successfully!")
+                        st.rerun()
+
+    with tab3:
+        st.subheader("Delete Item")
+
+        if not items:
+            st.info("No inventory items available to delete.")
+        else:
+            for item in items:
+                col1, col2 = st.columns([3, 1])
+
+                with col1:
+                    st.write(f"{item['id']} | {item['name']} | ${item['price']} | Stock: {item['stock']}")
+
+                with col2:
+                    if st.button("Delete", key=f"delete_{item['id']}"):
+                        delete_item(item["id"])
+                        st.warning("Item deleted.")
+                        st.rerun()
 
 #Record Sales
 
