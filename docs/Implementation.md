@@ -105,3 +105,26 @@ To improve separation of concerns and match the required Phase 2 structure.
 - Service layer
 - UI layer
 - Data layer
+
+
+
+## Entry 7 - 2026-05-14
+
+### Author
+Sean
+
+### Origin Prompt
+@ChatGPT what next
+
+### What Changed
+- Created utils/auth_service.py.
+- Moved authentication helper functions out of app.py.
+- app.py now imports authentication logic from the service layer.
+
+### Why It Changed
+To improve separation of concerns and reduce business logic inside the UI layer.
+
+### Layers Affected
+- Service layer
+- UI layer
+- Data layer
