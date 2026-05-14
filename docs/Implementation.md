@@ -128,3 +128,29 @@ To improve separation of concerns and reduce business logic inside the UI layer.
 - Service layer
 - UI layer
 - Data layer
+
+
+
+## Entry 8 - 2026-05-14
+
+### Author
+Sean
+
+### Origin Prompt
+@ChatGPT help me add an AI assistant to the inventory app
+
+### What Changed
+- Added AI assistant using OpenAI API.
+- Integrated assistant into the UI for user interaction.
+- Assistant can respond to inventory-related questions.
+
+### Why It Changed
+To meet the Phase 2 requirement of integrating an AI assistant that provides value to users.
+
+### Files Changed
+- app.py
+- utils/ai_assistant.py (if created)
+
+### Layers Affected
+- UI layer
+- Service layer

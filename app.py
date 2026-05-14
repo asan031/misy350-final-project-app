@@ -2,7 +2,7 @@ import streamlit as st
 from utils.data_manager import DataManager, USERS_FILE, INVENTORY_FILE, SALES_FILE
 from utils.inventory_service import get_inventory, get_sales, add_item, update_item, delete_item, record_sale
 from utils.auth_service import load_users, login_user, username_exists, next_user_id
-
+from utils.ai_assistant import InventoryAIAssistant
 #App Header and Status
 
 st.set_page_config(page_title="Inventory Manager", layout="wide")
@@ -46,7 +46,9 @@ with st.sidebar:
         if st.button("Record Sales", use_container_width=True):
             st.session_state["page"] = "record_sales"
             st.rerun()
-
+        if st.button("AI Assistant", use_container_width=True):
+            st.session_state["page"] = "ai_assistant"
+            st.rerun()
         if st.button("Logout", use_container_width=True):
             st.session_state["logged_in"] = False
             st.session_state["username"] = ""
@@ -378,3 +380,31 @@ elif st.session_state["page"] == "record_sales":
             st.rerun()
         else:
             st.error(message)
+
+
+# AI Assistant
+
+elif st.session_state["page"] == "ai_assistant":
+    if not st.session_state.get("logged_in"):
+        st.warning("Please log in first.")
+        st.stop()
+
+    st.header("Inventory AI Assistant")
+    st.write("Ask about inventory, sales, low stock, or restocking suggestions.")
+
+    question = st.text_area("What do you want help with?", key="ai_question")
+
+    if st.button("Ask AI", key="ask_ai_btn"):
+        if question.strip() == "":
+            st.error("Please enter a question.")
+        else:
+            assistant = InventoryAIAssistant()
+            answer = assistant.generate_response(
+                question,
+                get_inventory(),
+                get_sales(),
+                st.session_state["role"]
+            )
+
+            st.success("AI Response")
+            st.write(answer)
