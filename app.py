@@ -117,6 +117,15 @@ def next_sale_id(sales):
 def add_item(name, price, stock):
     items = get_inventory()
 
+    # check if item already exists
+    for item in items:
+        if item["name"].lower() == name.lower():
+            item["stock"] += stock
+            item["price"] = price  # optional: update price
+            DataManager.save_json(INVENTORY_FILE, items)
+            return
+
+    # otherwise create new item
     new_item = {
         "id": next_item_id(items),
         "name": name,

@@ -10,5 +10,11 @@
         "name": "Pen",
         "price": 1.25,
         "stock": 3
+    },
+    {
+        "id": 3,
+        "name": "Notebook",
+        "price": 4.99,
+        "stock": 15
     }
 ]
