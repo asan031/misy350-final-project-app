@@ -1,1 +1,16 @@
-[]
+[
+    {
+        "id": 1,
+        "item_id": 1,
+        "item_name": "Pen",
+        "quantity": 1,
+        "employee": "owner1"
+    },
+    {
+        "id": 2,
+        "item_id": 1,
+        "item_name": "Pen",
+        "quantity": 1,
+        "employee": "owner1"
+    }
+]

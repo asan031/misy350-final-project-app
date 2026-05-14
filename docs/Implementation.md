@@ -83,3 +83,25 @@ To improve inventory accuracy and fix an issue found during UI testing.
 ### Layers Affected
 - Inventory logic
 - Data layer
+
+
+## Entry 6 - 2026-05-14
+
+### Author
+Sean
+
+### Origin Prompt
+@ChatGPT next
+
+### What Changed
+- Created utils/inventory_service.py.
+- Moved inventory and sales logic out of app.py.
+- app.py now imports inventory functions from the service layer.
+
+### Why It Changed
+To improve separation of concerns and match the required Phase 2 structure.
+
+### Layers Affected
+- Service layer
+- UI layer
+- Data layer
