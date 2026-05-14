@@ -140,17 +140,30 @@ Sean
 @ChatGPT help me add an AI assistant to the inventory app
 
 ### What Changed
-- Added AI assistant using OpenAI API.
-- Integrated assistant into the UI for user interaction.
-- Assistant can respond to inventory-related questions.
+- Added an AI assistant connected to the OpenAI API.
+- Created `utils/ai_assistant.py` with an `InventoryAIAssistant` class.
+- Added an AI Assistant page in `app.py`.
+- Added sidebar navigation for the AI Assistant.
+- Connected the assistant to inventory and sales data.
+- Added error handling so the app does not crash if API quota/key issues occur.
 
 ### Why It Changed
-To meet the Phase 2 requirement of integrating an AI assistant that provides value to users.
+To meet the Phase 2 requirement for an AI assistant that provides useful inventory-related support inside the app.
 
 ### Files Changed
 - app.py
-- utils/ai_assistant.py (if created)
+- utils/ai_assistant.py
+- requirements.txt
+- .env
+- .gitignore
+- docs/implementation_log.md
 
 ### Layers Affected
 - UI layer
 - Service layer
+- AI assistant layer
+
+### Result
+- Users can ask inventory-related questions.
+- The assistant uses current inventory and sales data to generate responses.
+- The app handles API issues without crashing.

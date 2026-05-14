@@ -1,3 +1,5 @@
+from utils.data_manager import DataManager, USERS_FILE
+
 def load_users():
     return DataManager.load_json(USERS_FILE)
 
