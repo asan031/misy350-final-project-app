@@ -1,6 +1,7 @@
 import streamlit as st
 from utils.data_manager import DataManager, USERS_FILE, INVENTORY_FILE, SALES_FILE
 from utils.inventory_service import get_inventory, get_sales, add_item, update_item, delete_item, record_sale
+from utils.auth_service import load_users, login_user, username_exists, next_user_id
 
 #App Header and Status
 
@@ -61,37 +62,6 @@ with st.sidebar:
             st.session_state["page"] = "register"
             st.rerun()
 
-#Authentication Functions
-
-
-
-def load_users():
-    return DataManager.load_json(USERS_FILE)
-
-
-def login_user(username, password):
-    users = load_users()
-
-    for user in users:
-        if user["username"] == username and user["password"] == password:
-            return user
-
-    return None
-
-
-def username_exists(users, username):
-    for user in users:
-        if user.get("username", "").lower() == username.lower():
-            return True
-    return False
-
-
-def next_user_id(users):
-    if not users:
-        return 1
-
-    existing_ids = [user.get("id", 0) for user in users]
-    return max(existing_ids) + 1
 
 
 #Login Page
