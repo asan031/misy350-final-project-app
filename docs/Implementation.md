@@ -167,3 +167,27 @@ To meet the Phase 2 requirement for an AI assistant that provides useful invento
 - Users can ask inventory-related questions.
 - The assistant uses current inventory and sales data to generate responses.
 - The app handles API issues without crashing.
+
+
+
+## Entry 9 - 2026-05-14
+
+### Author
+Angelo
+
+### Origin Prompt
+@ChatGPT lets get to the next part
+
+### What Changed
+- Refactored Record Sales page using st.form().
+- Improved layout and user interaction.
+- Added consistent feedback messages.
+
+### Why It Changed
+To improve usability and match the design quality of other UI components.
+
+### Files Changed
+- app.py
+
+### Layers Affected
+- UI layer

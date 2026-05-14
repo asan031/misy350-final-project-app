@@ -344,42 +344,45 @@ elif st.session_state["page"] == "record_sales":
         st.info("No inventory items available.")
         st.stop()
 
-    st.subheader("Current Inventory")
-
-    available_items = []
-    for item in items:
-        st.write(f"ID: {item['id']} | {item['name']} | ${item['price']} | Stock: {item['stock']}")
-        if item["stock"] > 0:
-            available_items.append(item)
+    available_items = [item for item in items if item["stock"] > 0]
 
     if not available_items:
         st.warning("All items are out of stock.")
         st.stop()
 
+    st.subheader("Current Inventory")
+    for item in items:
+        st.write(f"ID: {item['id']} | {item['name']} | ${item['price']} | Stock: {item['stock']}")
+
+    st.divider()
+
     st.subheader("Record a Sale")
 
-    item_options = {
-        f"{item['id']} - {item['name']} (Stock: {item['stock']})": item["id"]
-        for item in available_items
-    }
+    with st.form("record_sale_form"):
+        item_options = {
+            f"{item['id']} - {item['name']} (Stock: {item['stock']})": item["id"]
+            for item in available_items
+        }
 
-    selected_label = st.selectbox("Choose an item", list(item_options.keys()), key="record_sale_select")
-    selected_item_id = item_options[selected_label]
+        selected_label = st.selectbox("Choose an item", list(item_options.keys()))
+        selected_item_id = item_options[selected_label]
 
-    quantity = st.number_input("Quantity Sold", min_value=1, step=1, key="record_sale_quantity")
+        quantity = st.number_input("Quantity Sold", min_value=1, step=1)
 
-    if st.button("Record Sale", key="record_sale_btn"):
-        success, message = record_sale(
-            selected_item_id,
-            quantity,
-            st.session_state["username"]
-        )
+        submitted = st.form_submit_button("Record Sale")
 
-        if success:
-            st.success(message)
-            st.rerun()
-        else:
-            st.error(message)
+        if submitted:
+            success, message = record_sale(
+                selected_item_id,
+                quantity,
+                st.session_state["username"]
+            )
+
+            if success:
+                st.success(message)
+                st.rerun()
+            else:
+                st.error(message)
 
 
 # AI Assistant
