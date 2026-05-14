@@ -191,3 +191,29 @@ To improve usability and match the design quality of other UI components.
 
 ### Layers Affected
 - UI layer
+
+## Entry 10 - 2026-05-14
+
+### Author
+Sean
+
+### Origin Prompt
+@ChatGPT ill handle any of the improvements, tell me what to do
+
+### What Changed
+- Improved inventory display using containers and columns.
+- Replaced plain text inventory lists with card-style UI components across dashboards and record sales page.
+- Fixed layout structure to ensure proper alignment and grouping.
+
+### Why It Changed
+To address Phase 1 feedback about poor layout and lack of structured UI design using Streamlit layout tools.
+
+### Files Changed
+- app.py
+
+### Layers Affected
+- UI layer
+
+### Result
+- Inventory is now displayed in a clean, structured card format.
+- Improved readability and user experience across the application.

@@ -171,7 +171,18 @@ elif st.session_state["page"] == "admin_dashboard":
             st.info("No inventory items found.")
         else:
             for item in items:
-                st.write(f"{item['name']} | ${item['price']} | Stock: {item['stock']}")
+                with st.container(border=True):
+                    col1, col2, col3 = st.columns([2, 1, 1])
+
+                    with col1:
+                        st.subheader(item["name"])
+                        st.caption(f"Item ID: {item['id']}")
+
+                    with col2:
+                        st.metric("Price", f"${item['price']}")
+
+                    with col3:
+                        st.metric("Stock", item["stock"])
 
     with tab2:
         low_stock_items = [item for item in items if item["stock"] <= 5]
@@ -216,7 +227,18 @@ elif st.session_state["page"] == "employee_dashboard":
             st.info("No inventory items found.")
         else:
             for item in items:
-                st.write(f"{item['name']} | Price: ${item['price']} | Stock: {item['stock']}")
+                with st.container(border=True):
+                    col1, col2, col3 = st.columns([2, 1, 1])
+
+                    with col1:
+                        st.subheader(item["name"])
+                        st.caption(f"Item ID: {item['id']}")
+
+                    with col2:
+                        st.metric("Price", f"${item['price']}")
+
+                    with col3:
+                        st.metric("Stock", item["stock"])
 
     with tab2:
         low_stock_items = [item for item in items if item["stock"] <= 5]
@@ -352,7 +374,18 @@ elif st.session_state["page"] == "record_sales":
 
     st.subheader("Current Inventory")
     for item in items:
-        st.write(f"ID: {item['id']} | {item['name']} | ${item['price']} | Stock: {item['stock']}")
+        with st.container(border=True):
+            col1, col2, col3 = st.columns([2, 1, 1])
+
+            with col1:
+                st.subheader(item["name"])
+                st.caption(f"Item ID: {item['id']}")
+
+            with col2:
+                st.metric("Price", f"${item['price']}")
+
+            with col3:
+                st.metric("Stock", item["stock"])
 
     st.divider()
 
