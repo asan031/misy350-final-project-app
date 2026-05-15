@@ -7,10 +7,10 @@ class User:
 
 
 class InventoryItem:
-    def __init__(self, item_id, name, quantity, price):
+    def __init__(self, item_id, name, stock, price):
         self.id = item_id
         self.name = name
-        self.quantity = quantity
+        self.stock = stock
         self.price = price
 
 

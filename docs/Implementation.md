@@ -1,3 +1,25 @@
+## Entry 1 - 2026-05-12
+
+### Author
+Sean
+
+
+### What Changed
+- Reviewed Phase 1 feedback.
+- Identified required Phase 2 improvements.
+- Planned refactoring, UI improvements, AI assistant integration, and documentation updates.
+
+### Why It Changed
+To organize the work needed for Phase 2 and address feedback from Phase 1.
+
+### Layers Affected
+- UI layer
+- Service layer
+- Data layer
+- Documentation
+
+
+
 ## Entry 2 - 2026-05-12
 
 ### Author
@@ -217,3 +239,27 @@ To address Phase 1 feedback about poor layout and lack of structured UI design u
 ### Result
 - Inventory is now displayed in a clean, structured card format.
 - Improved readability and user experience across the application.
+
+
+
+
+## Entry 11 - 2026-05-14
+
+### Author
+Team
+
+### What Changed
+- Completed final testing across login, dashboards, inventory management, record sales, and AI assistant.
+- Verified UI improvements and service-layer refactoring.
+
+### Why It Changed
+To confirm the app is ready for final submission and demo.
+
+### Layers Affected
+- UI layer
+- Service layer
+- AI assistant layer
+- Documentation
+
+### Result
+- Application is functional and ready for submission.
