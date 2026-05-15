@@ -9,6 +9,12 @@
         "id": 2,
         "name": "Pen",
         "price": 1.25,
-        "stock": 3
+        "stock": 2
+    },
+    {
+        "id": 3,
+        "name": "Pencil",
+        "price": 1.0,
+        "stock": 4
     }
 ]

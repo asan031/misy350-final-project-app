@@ -70,6 +70,22 @@ with st.sidebar:
 
 if st.session_state["page"] == "login":
     st.header("Login")
+    st.info("""
+        **Demo Accounts**
+
+        Admin  
+        - Username: owner1 
+        - Password: 1234
+
+        Employee1
+        - Username: worker1
+        - Password: 1234
+            
+        Employee2
+        - Username: test
+        - Password: test123
+        """)
+    
 
     username = st.text_input("Username", key="login_username")
     password = st.text_input("Password", type="password", key="login_password")
